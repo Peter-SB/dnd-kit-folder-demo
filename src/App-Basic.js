@@ -223,26 +223,21 @@ function App() {
     );
 
   return (
-    <DndContext
-      sensors={sensors}
+    <DndContext // Container for all the dnd-kit activity with parameters to declare behaviour
+      sensors={sensors} // Specify the sensors to use for drag-and-drop interactions.
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div style={{ padding: '20px' }}>
         <h2>Playlist Organizer</h2>
+        {/* Render the tree structure of folders and playlists */}
         <div>{renderTree(data)}</div>
       </div>
 
-      <DragOverlay>
-        {activeItem ? (
-          <div style={{ padding: '4px', background: 'lightgrey', border: '1px solid black' }}>
-            {activeItem.type === 'folder'
-              ? `📁 ${activeItem.title}`
-              : `🎵 ${activeItem.title}`}
-          </div>
-        ) : null}
-      </DragOverlay>
+      {/* Optional: DragOverlay displays the item being dragged */}
+      {/* <DragOverlay>
+      </DragOverlay> */}
     </DndContext>
   );
 }
@@ -294,7 +289,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem }) {
             parentId={item.id}
             index={0}
             activeDropTarget={activeDropTarget}
-            indent={(level + 1) * 20}
+            indent={(level + 1) * 30}
           />
           {item.children.map((child, i) => (
             <React.Fragment key={child.id}>
@@ -313,7 +308,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem }) {
                 parentId={item.id}
                 index={i + 1}
                 activeDropTarget={activeDropTarget}
-                indent={(level + 1) * 20}
+                indent={(level + 1) * 30}
               />
             </React.Fragment>
           ))}
@@ -324,7 +319,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem }) {
           parentId={item.id}
           index={0}
           activeDropTarget={activeDropTarget}
-          indent={(level + 1) * 20}
+          indent={(level + 1) * 30}
         />
       )}
     </>
