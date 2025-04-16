@@ -9,7 +9,7 @@ import {
   useDroppable,
 } from '@dnd-kit/core';
 
-// Initial demo data: folders have a children array; playlists do not.
+// Initial demo data: folders have a children array, playlists do not.
 const initialData = [
   {
     id: 'folder-1',
@@ -120,10 +120,10 @@ function isDescendant(folder, descendantId) {
 }
 
 // InsertionZone component: a droppable area for inserting an item at a specific index.
-// The 'indent' prop is computed from the parent's level so that the blue line aligns with the child items.
+// The 'indent' prop is computed from the parent's level.
 function InsertionZone({ parentId, index, activeDropTarget, indent }) {
   const droppable = useDroppable({ id: `${parentId}-insertion-${index}` });
-  // Highlight this zone if it is the current drop target.
+  // Highlight if this zone is the current drop target.
   const isActive =
     droppable.isOver &&
     activeDropTarget &&
@@ -149,11 +149,12 @@ function App() {
   const [activeDropTarget, setActiveDropTarget] = useState(null);
   const sensors = useSensors(useSensor(PointerSensor));
 
+  // When drag starts, record active id.
   const handleDragStart = event => {
     setActiveId(event.active.id);
   };
 
-  // When dragging over an insertion zone, update activeDropTarget.
+  // When dragging over, if the droppable id indicates an insertion zone, update activeDropTarget.
   const handleDragOver = event => {
     const { active, over } = event;
     if (over && over.id) {
@@ -161,7 +162,7 @@ function App() {
         const [parentId, indexStr] = over.id.split('-insertion-');
         const index = parseInt(indexStr, 10);
         const activeItem = findItemById(data, active.id);
-        // If dragging a folder, ensure it is not dropped onto itself or one of its descendants.
+        // For folders being dragged, check valid drop: can't drop on itself or its descendant.
         if (activeItem && activeItem.type === 'folder') {
           if (active.id === parentId || isDescendant(activeItem, parentId)) {
             setActiveDropTarget(null);
@@ -177,7 +178,7 @@ function App() {
     }
   };
 
-  // On drag end, if over an insertion zone, remove the active item and insert it at the target index.
+  // When drag ends, if the drop target is an insertion zone, remove and reinsert at the specified index.
   const handleDragEnd = event => {
     const { active, over } = event;
     if (over && over.id && over.id.includes('-insertion-')) {
@@ -204,7 +205,8 @@ function App() {
   // Look up the active draggable item using activeId.
   const activeItem = activeId ? findItemById(data, activeId) : null;
 
-  // Render tree recursively, passing the current indentation level.
+  // Render tree recursively.
+  // Now, we pass down the level to children, and each item computes its own margin.
   const renderTree = (items, level = 0) =>
     items.map(item =>
       item.type === 'folder' ? (
@@ -254,108 +256,12 @@ function DraggableItem({ id, children, style, listeners, attributes, draggableRe
   );
 }
 
-// FolderItem: renders a folder with a small grab zone, an expand/collapse toggle, and its label.
-// It also renders insertion zones and its children when expanded.
+// FolderItem: renders a folder with its label and its children along with insertion zones.
 function FolderItem({ item, level, activeDropTarget, activeItem }) {
-  const [expanded, setExpanded] = useState(true);
-  // Set up the draggable hook for the folder's grab handle.
-  const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({ id: item.id });
-  const headerIndent = level * 20; // linear indent per level
-
-  // Style for the small grab zone icon.
-  const handleStyle = {
-    width: '20px',
-    height: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'grab',
-    marginRight: '4px',
-    border: '1px solid #ccc',
-    borderRadius: '3px',
-    backgroundColor: 'white',
-    flexShrink: 0,
-  };
-
-  // Folder header container style.
-  const headerStyle = {
-    marginLeft: `${headerIndent}px`,
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '4px',
-    marginTop: '4px',
-  };
-
-  return (
-    <div>
-      <div style={headerStyle}>
-        {/* Draggable grab handle */}
-        <span ref={setNodeRef} {...listeners} {...attributes} style={handleStyle}>
-          ≡
-        </span>
-        {/* Expand/Collapse button if there are children */}
-        {item.children && item.children.length > 0 && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            style={{ marginRight: '4px', cursor: 'pointer' }}
-          >
-            {expanded ? '▼' : '▶'}
-          </button>
-        )}
-        <span>
-          📁 {item.title}
-        </span>
-      </div>
-      {/* Render children and insertion zones only if expanded */}
-      {expanded && (
-        <>
-          {(!item.children || item.children.length === 0) ? (
-            <InsertionZone
-              parentId={item.id}
-              index={0}
-              activeDropTarget={activeDropTarget}
-              indent={(level + 1) * 20}
-            />
-          ) : (
-            <>
-              <InsertionZone
-                parentId={item.id}
-                index={0}
-                activeDropTarget={activeDropTarget}
-                indent={(level + 1) * 20}
-              />
-              {item.children.map((child, i) => (
-                <React.Fragment key={child.id}>
-                  {child.type === 'folder' ? (
-                    <FolderItem
-                      item={child}
-                      level={level + 1}
-                      activeDropTarget={activeDropTarget}
-                      activeItem={activeItem}
-                    />
-                  ) : (
-                    <PlaylistItem item={child} level={level + 1} />
-                  )}
-                  <InsertionZone
-                    parentId={item.id}
-                    index={i + 1}
-                    activeDropTarget={activeDropTarget}
-                    indent={(level + 1) * 20}
-                  />
-                </React.Fragment>
-              ))}
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-// PlaylistItem: a simple draggable component for playlists.
-function PlaylistItem({ item, level }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({ id: item.id });
-  const indentStyle = { marginLeft: `${level * 20}px`, marginTop: '4px', marginBottom: '4px' };
+  const { attributes, listeners, setNodeRef: setDraggableRef, transform, transition } =
+    useDraggable({ id: item.id });
+  // The folder label uses the given level for indentation.
+  const indentStyle = { marginLeft: `${level * 30}px`, marginTop: '1px', marginBottom: '1px' };
   const draggableStyle = {
     ...indentStyle,
     transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
@@ -367,6 +273,78 @@ function PlaylistItem({ item, level }) {
     display: 'inline-block',
   };
 
+  return (
+    <>
+      <div>
+        <DraggableItem
+          id={item.id}
+          draggableRef={setDraggableRef}
+          listeners={listeners}
+          attributes={attributes}
+          style={draggableStyle}
+        >
+          📁 {item.title}
+        </DraggableItem>
+      </div>
+      {/* Render children and insertion zones without extra container margin */}
+      {item.children && item.children.length > 0 ? (
+        <>
+          {/* Insertion zone before the first child; indent based on parent's level */}
+          <InsertionZone
+            parentId={item.id}
+            index={0}
+            activeDropTarget={activeDropTarget}
+            indent={(level + 1) * 20}
+          />
+          {item.children.map((child, i) => (
+            <React.Fragment key={child.id}>
+              {child.type === 'folder' ? (
+                <FolderItem
+                  item={child}
+                  level={level + 1}
+                  activeDropTarget={activeDropTarget}
+                  activeItem={activeItem}
+                />
+              ) : (
+                <PlaylistItem item={child} level={level + 1} />
+              )}
+              {/* Insertion zone after each child */}
+              <InsertionZone
+                parentId={item.id}
+                index={i + 1}
+                activeDropTarget={activeDropTarget}
+                indent={(level + 1) * 20}
+              />
+            </React.Fragment>
+          ))}
+        </>
+      ) : (
+        // If no children, render a single insertion zone at index 0.
+        <InsertionZone
+          parentId={item.id}
+          index={0}
+          activeDropTarget={activeDropTarget}
+          indent={(level + 1) * 20}
+        />
+      )}
+    </>
+  );
+}
+
+// PlaylistItem: a simple draggable component.
+function PlaylistItem({ item, level }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({ id: item.id });
+  const indentStyle = { marginLeft: `${level * 30}px`, marginTop: '1px', marginBottom: '1px' };
+  const draggableStyle = {
+    ...indentStyle,
+    transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+    transition,
+    padding: '4px',
+    border: '1px solid gray',
+    backgroundColor: 'white',
+    cursor: 'grab',
+    display: 'inline-block',
+  };
   return (
     <DraggableItem
       id={item.id}
