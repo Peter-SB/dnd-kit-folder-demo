@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Peter-SB/dnd-kit-folder-demo/static/css/main.e6c13ad2.css",
+    "main.js": "/Peter-SB/dnd-kit-folder-demo/static/js/main.43f8dba3.js",
+    "static/js/453.37009fca.chunk.js": "/Peter-SB/dnd-kit-folder-demo/static/js/453.37009fca.chunk.js",
+    "index.html": "/Peter-SB/dnd-kit-folder-demo/index.html",
+    "main.e6c13ad2.css.map": "/Peter-SB/dnd-kit-folder-demo/static/css/main.e6c13ad2.css.map",
+    "main.43f8dba3.js.map": "/Peter-SB/dnd-kit-folder-demo/static/js/main.43f8dba3.js.map",
+    "453.37009fca.chunk.js.map": "/Peter-SB/dnd-kit-folder-demo/static/js/453.37009fca.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.43f8dba3.js"
+  ]
+}
