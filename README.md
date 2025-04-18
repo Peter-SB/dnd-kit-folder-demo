@@ -5,6 +5,8 @@ This simple demo shows how to make a playlist organiser in React using dnd-kit, 
 
 In this demo we simulate a playlist organiser where playlist can be added to folders, folders can have sub-folders, but playlists cant have any children items.
 
+This demo is simple but aims to teach developers the basics of using dnd-kit for nested lists with constraints (like folders-only can have children).
+
 
 ## Basic Demo
 
@@ -97,10 +99,44 @@ Example:
 </DragOverlay>
 ```
 
-#### Tips and Tricks
+### Why IDs Are Important
+Every draggable and droppable element in dnd-kit needs a unique id.
+
+This is how dnd-kit tracks what you're dragging (active.id), what you're dragging over (over.id), and what to update when a drop happens.
+
+In this demo:
+
+- Each playlist or folder has a unique id like folder-1, playlist-2, etc.
+
+- Each insertion zone has an id like folder-1-insertion-0 — this is key to figuring out exactly where an item should be dropped inside its parent.
+
+
+
+### Tips and Tricks
 
 Use a DragOverlay: This makes the dragged item look distinct and avoids layout shifts. 
 Restrict Droppable Areas: Use logic to prevent invalid drops (e.g. folders can't be dropped into their descendants). 
 
-### Demo Code Breakdown
-...
+## Key Details Specific To This Demo
+
+### Tree Data Structure
+We store items in a tree format, where:
+
+- Folders have a children array.
+- Playlists don’t have children (This know as a leaf node). This is important because drag-drop logic needs to know what type of item you're working with.
+
+We use recursion to render the folders children using recursion. 
+
+### Drop Zones Between Items
+Instead of just dropping on folders, we allow dropping between items using insertion zones for a nicer UI experiance. these are identified with unique droppable IDs like "folder-1-insertion-0".
+
+### Folder Constraints
+The main constraint is that you can’t drop a folder into itself or one of its descendants. This is checked during onDragOver and onDragEnd with a recursive isDescendant() helper. Prevents creating circular references.
+
+### Moving Items
+When an item is dropped:
+
+- It's removed from its current location using removeItem().
+- It's inserted into the new folder + index using insertItemAt().
+
+We only update state (setData) if both steps are valid.
