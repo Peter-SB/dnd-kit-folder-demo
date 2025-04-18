@@ -149,7 +149,7 @@ function App() {
   const [activeDropTarget, setActiveDropTarget] = useState(null);
   const sensors = useSensors(useSensor(PointerSensor));
 
-  // When drag starts, record active id.
+  // When drag starts, keep active id.
   const handleDragStart = event => {
     setActiveId(event.active.id);
   };
@@ -206,7 +206,7 @@ function App() {
   const activeItem = activeId ? findItemById(data, activeId) : null;
 
   // Render tree recursively.
-  // Now, we pass down the level to children, and each item computes its own margin.
+  // Pass down the level to children, and each item computes its own margin.
   const renderTree = (items, level = 0) =>
     items.map(item =>
       item.type === 'folder' ? (
@@ -224,7 +224,7 @@ function App() {
 
   return (
     <DndContext // Container for all the dnd-kit activity with parameters to declare behaviour
-      sensors={sensors} // Specify the sensors to use for drag-and-drop interactions.
+      sensors={sensors}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -238,7 +238,7 @@ function App() {
           alignItems: 'center',
           gap: '10px'
         }}>
-          Playlist Organizer
+          Playlist Organiser
           <a href="https://github.com/Peter-SB/dnd-kit-folder-demo" target="_blank" rel="noopener noreferrer">
             <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style={{ width: '30px', height: '30px', paddingTop: '10px', paddingLeft: '20px' }} />
           </a>
@@ -247,7 +247,7 @@ function App() {
         <div>{renderTree(data)}</div>
       </div>
 
-      {/* Optional: DragOverlay displays the item being dragged */}
+      {/* Optional: DragOverlay changes how the item being dragged is displayed */}
       {/* <DragOverlay>
       </DragOverlay> */}
     </DndContext>
@@ -267,7 +267,6 @@ function DraggableItem({ id, children, style, listeners, attributes, draggableRe
 function FolderItem({ item, level, activeDropTarget, activeItem }) {
   const { attributes, listeners, setNodeRef: setDraggableRef, transform, transition } =
     useDraggable({ id: item.id });
-  // The folder label uses the given level for indentation.
   const indentStyle = { marginLeft: `${level * 30}px`, marginTop: '1px', marginBottom: '1px' };
   const draggableStyle = {
     ...indentStyle,
