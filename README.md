@@ -1,22 +1,20 @@
-# Drag and Drop Organisable Tree Demo (in React with dnd-kit)
+# Drag & Drop Tree Demo (React + dnd-kit)
 
 This simple demo shows how to make a playlist organiser in React using dnd-kit, a lightweight, modular and extensible drag & drop toolkit for React. 
+This demo is simple but aims to teach developers the basics of using dnd-kit in an example with nested lists with constraints.
 
+It demonstrates:
 
-In this demo we simulate a playlist organiser where playlist can be added to folders, folders can have sub-folders, but playlists cant have any children items.
+- **Nested tree structures**: folders can contain other folders or playlists.
+- **Constraints**: playlists cannot have children.
+- **Custom drag logic**: control where and how items can be moved.
+- **Visual aids**: show where draggable items will be inserted. 
 
-This demo is simple but aims to teach developers the basics of using dnd-kit for nested lists with constraints (like playlists can't have children).
-
-
-## Basic Demo
-
-
+Try the live demo: [View Demo](https://peter-sb.github.io/dnd-kit-folder-demo/)
 
 <div align="center">
     <img src="./Screenshot Basic Demo.png" alt="dnd-kit Demo" style="width:50%; height:auto;">
 </div>
-
-Try demo here: [https://peter-sb.github.io/dnd-kit-folder-demo/](https://peter-sb.github.io/dnd-kit-folder-demo/)
 
 
 ## Install dnd-kit
