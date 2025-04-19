@@ -1,22 +1,23 @@
-# Drag and Drop Kit React Tree Demo with Folders
+# Drag and Drop Organisable Tree Demo (in React with dnd-kit)
 
 This simple demo shows how to make a playlist organiser in React using dnd-kit, a lightweight, modular and extensible drag & drop toolkit for React. 
 
 
 In this demo we simulate a playlist organiser where playlist can be added to folders, folders can have sub-folders, but playlists cant have any children items.
 
-This demo is simple but aims to teach developers the basics of using dnd-kit for nested lists with constraints (like folders-only can have children).
+This demo is simple but aims to teach developers the basics of using dnd-kit for nested lists with constraints (like playlists can't have children).
 
 
 ## Basic Demo
 
-Try here: [https://peter-sb.github.io/dnd-kit-folder-demo/](https://peter-sb.github.io/dnd-kit-folder-demo/)
 
-This basic version includes just the folder and playlists, with a blue indicator for where you are placing the selected item.
 
 <div align="center">
     <img src="./Screenshot Basic Demo.png" alt="dnd-kit Demo" style="width:50%; height:auto;">
 </div>
+
+Try demo here: [https://peter-sb.github.io/dnd-kit-folder-demo/](https://peter-sb.github.io/dnd-kit-folder-demo/)
+
 
 ## Install dnd-kit
 
@@ -125,18 +126,22 @@ We store items in a tree format, where:
 - Folders have a children array.
 - Playlists don’t have children (This know as a leaf node). This is important because drag-drop logic needs to know what type of item you're working with.
 
-We use recursion to render the folders children using recursion. 
+We use recursion to render the folders children. 
 
 ### Drop Zones Between Items
 Instead of just dropping on folders, we allow dropping between items using insertion zones for a nicer UI experiance. these are identified with unique droppable IDs like "folder-1-insertion-0".
 
 ### Folder Constraints
-The main constraint is that you can’t drop a folder into itself or one of its descendants. This is checked during onDragOver and onDragEnd with a recursive isDescendant() helper. Prevents creating circular references.
+The main constraint is that you can’t drop a folder into itself or one of its descendants. This is checked during `onDragOver` and `onDragEnd` with a recursive `isDescendant()` helper. Prevents creating circular references.
 
 ### Moving Items
 When an item is dropped:
 
-- It's removed from its current location using removeItem().
-- It's inserted into the new folder + index using insertItemAt().
+- It's removed from its current location using `removeItem()`.
+- It's inserted into the new folder + index using `insertItemAt()`.
 
 We only update state (setData) if both steps are valid.
+
+
+### Why Not Use dnd-kit/sortable?
+dnd-kit/sortable is more useful for flat lists but this demo uses nested folders/playlists with custom constraints and insert logic so sortable isn't quite the right fit here and building the logic from scratch makes more sense.
