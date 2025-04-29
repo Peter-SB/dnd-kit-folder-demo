@@ -123,12 +123,14 @@ function isDescendant(folder, descendantId) {
 // The 'indent' prop is computed from the parent's level.
 function InsertionZone({ parentId, index, activeDropTarget, indent }) {
   const droppable = useDroppable({ id: `${parentId}-insertion-${index}` });
+
   // Highlight if this zone is the current drop target.
   const isActive =
     droppable.isOver &&
     activeDropTarget &&
     activeDropTarget.parentId === parentId &&
     activeDropTarget.index === index;
+
   return (
     <div
       ref={droppable.setNodeRef}
@@ -192,9 +194,39 @@ function App() {
           return;
         }
       }
+
+      // Find the original parent and index of the dragged item
+      let originalParentId = null;
+      let originalIndex = -1;
+
+      // Helper function to find parent ID and index of an item
+      const findParentInfo = (items, id, parent = null) => {
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].id === id) {
+            return { parentId: parent, index: i };
+          }
+          if (items[i].children) {
+            const result = findParentInfo(items[i].children, id, items[i].id);
+            if (result.parentId) return result;
+          }
+        }
+        return { parentId: null, index: -1 };
+      };
+
+      const { parentId: foundParentId, index: foundIndex } = findParentInfo(data, active.id);
+      originalParentId = foundParentId;
+      originalIndex = foundIndex;
+
+      // Adjust the insertion index if moving within the same container downward
+      let adjustedIndex = index;
+      if (originalParentId === parentId && originalIndex < index) {
+        // If moving down in the same container, decrement the target index
+        adjustedIndex = index - 1;
+      }
+
       const { newTree, removed } = removeItem(data, active.id);
       if (removed) {
-        const updatedTree = insertItemAt(newTree, parentId, index, removed);
+        const updatedTree = insertItemAt(newTree, parentId, adjustedIndex, removed);
         setData(updatedTree);
       }
     }
