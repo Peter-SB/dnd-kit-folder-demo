@@ -113,8 +113,9 @@ In this demo:
 
 ### Tips and Tricks
 
-Use a DragOverlay: This makes the dragged item look distinct and avoids layout shifts. 
-Restrict Droppable Areas: Use logic to prevent invalid drops (e.g. folders can't be dropped into their descendants). 
+**Use a DragOverlay:** This component makes the dragged item look distinct so can be a helpfull visual indicator. 
+
+**Restrict Droppable Areas:** Use logic to prevent invalid drops (e.g. folders can't be dropped into their descendants). 
 
 ## Key Details Specific To This Demo
 
